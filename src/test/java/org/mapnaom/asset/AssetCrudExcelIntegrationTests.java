@@ -7,7 +7,9 @@ import org.mapnaom.asset.dto.ImportResult;
 import org.mapnaom.asset.dto.ReferenceDtos.LocationRequest;
 import org.mapnaom.asset.dto.ReferenceDtos.NamedRequest;
 import org.mapnaom.asset.dto.ReferenceDtos.PersonRequest;
+import org.mapnaom.asset.entity.enums.AssetGroup;
 import org.mapnaom.asset.entity.enums.AssetStatus;
+import org.mapnaom.asset.entity.enums.DepreciationMethod;
 import org.mapnaom.asset.entity.enums.DepreciationStatus;
 import org.mapnaom.asset.service.AssetExcelService;
 import org.mapnaom.asset.service.AssetService;
@@ -80,8 +82,8 @@ class AssetCrudExcelIntegrationTests {
                 "AST-001",
                 title,
                 LocalDate.of(2025, 1, 15),
-                "IT Equipment",
-                "Straight Line",
+                AssetGroup.OFFICE_FURNITURE_STRAIGHT_5_YEARS,
+                DepreciationMethod.STRAIGHT_LINE_5_YEARS,
                 "CC-01",
                 "PR-01",
                 "LOC-01",
@@ -89,8 +91,8 @@ class AssetCrudExcelIntegrationTests {
                 "P-200",
                 acquisitionCost,
                 new BigDecimal("250.00"),
-                AssetStatus.ACTIVE,
-                DepreciationStatus.IN_PROGRESS
+                AssetStatus.PLATED,
+                DepreciationStatus.NOT_DEPRECIATED
         );
     }
 }

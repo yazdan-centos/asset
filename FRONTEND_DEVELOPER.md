@@ -165,8 +165,13 @@ export const deleteAsset = (id) => api.delete(`/api/assets/${id}`);
 
 - Export all assets: `GET /api/assets/export`
 - Import assets: `POST /api/assets/import` with `multipart/form-data`
+- Import cost centers: `POST /api/cost-centers/import`
+- Import projects: `POST /api/projects/import`
+- Import locations: `POST /api/locations/import`
+- Import people: `POST /api/people/import`
 - Only `.xlsx` files are accepted
 - Import is atomic and rolls back on any failure
+- Duplicate rows inside the same file are ignored after the first occurrence by key field (`plateNumber` for assets, `code` for cost centers/projects/locations, `personnelCode` for people)
 
 Example upload:
 
@@ -220,6 +225,7 @@ export function AuthProvider({ children }) {
 - Asset detail page
 - Asset create/edit form
 - Cost center / project / location / person management pages
+- Reference Excel import pages for admin users
 - Admin user and role management pages
 - Excel import/export controls for admin users
 
@@ -233,10 +239,12 @@ export function AuthProvider({ children }) {
 
 ## 8. Form handling and data mapping
 
-The backend expects dates in `yyyy-MM-dd` format and enum values using Java names such as:
+The backend expects dates in `yyyy-MM-dd` format and enum values using Java names. Common enum values include:
 
-- `ACTIVE`
-- `IN_PROGRESS`
+- Asset status: `PLATED`, `PENDING_TRANSFER`, `OUT_OF_ORGANIZATION`, `SOLD`, `SCRAPPED`, `DELETED`, `PENDING_EXIT_FROM_ORGANIZATION`, `ASSET_SET_ASIDE`, `TEMPORARY_EXIT`, `TRANSFERRED_TO_WAREHOUSE`, `REPLATED`
+- Depreciation status: `NOT_DEPRECIATED`, `NON_DEPRECIABLE`, `DEPRECIATED`
+- Asset group: `TECHNICAL_TOOL_STRAIGHT_10_YEARS`, `OFFICE_FURNITURE_STRAIGHT_15_YEARS`, `OFFICE_FURNITURE_STRAIGHT_10_YEARS`, `OFFICE_FURNITURE_STRAIGHT_3_YEARS`, `OFFICE_FURNITURE_STRAIGHT_5_YEARS`, `LAND`, `BUILDING_STRAIGHT_15_YEARS`, `BUILDING_STRAIGHT_25_YEARS`, `SOFTWARE_STRAIGHT_3_YEARS`, `VEHICLE_STRAIGHT_4_YEARS`, `VEHICLE_STRAIGHT_6_YEARS`
+- Depreciation method: `STRAIGHT_LINE_10_YEARS`, `STRAIGHT_LINE_15_YEARS`, `STRAIGHT_LINE_25_YEARS`, `STRAIGHT_LINE_3_YEARS`, `STRAIGHT_LINE_4_YEARS`, `STRAIGHT_LINE_5_YEARS`, `STRAIGHT_LINE_6_YEARS`
 
 When building JSX forms, map the labels to the exact backend fields:
 
@@ -245,13 +253,14 @@ const assetPayload = {
   plateNumber: values.plateNumber,
   title: values.title,
   commissioningDate: formatDate(values.commissioningDate),
-  assetGroup: values.assetGroup,
+  assetGroup: values.assetGroup, // e.g. 'OFFICE_FURNITURE_STRAIGHT_5_YEARS'
+  depreciationMethod: values.depreciationMethod, // e.g. 'STRAIGHT_LINE_5_YEARS'
   status: values.status,
   depreciationStatus: values.depreciationStatus,
 };
 ```
 
-Normalize user-friendly inputs before sending them to the API.
+Use the enum names from the backend, not a translated Persian label, when sending payloads. For reference data imports and management screens, keep the UI value as the exact backend code as well.
 
 ## 9. Error handling in React
 

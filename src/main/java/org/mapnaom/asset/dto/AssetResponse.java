@@ -1,6 +1,8 @@
 package org.mapnaom.asset.dto;
 
+import org.mapnaom.asset.entity.enums.AssetGroup;
 import org.mapnaom.asset.entity.enums.AssetStatus;
+import org.mapnaom.asset.entity.enums.DepreciationMethod;
 import org.mapnaom.asset.entity.enums.DepreciationStatus;
 
 import java.math.BigDecimal;
@@ -15,8 +17,8 @@ public record AssetResponse(
         String plateNumber,
         String title,
         LocalDate commissioningDate,
-        String assetGroup,
-        String depreciationMethod,
+        AssetGroup assetGroup,
+        DepreciationMethod depreciationMethod,
         ReferenceValue costCenter,
         ReferenceValue project,
         ReferenceValue location,

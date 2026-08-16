@@ -84,8 +84,8 @@ public class AssetService {
         asset.setPlateNumber(request.plateNumber().trim());
         asset.setTitle(request.title().trim());
         asset.setCommissioningDate(request.commissioningDate());
-        asset.setAssetGroup(request.assetGroup().trim());
-        asset.setDepreciationMethod(request.depreciationMethod().trim());
+        asset.setAssetGroup(request.assetGroup());
+        asset.setDepreciationMethod(request.depreciationMethod());
         asset.setCostCenter(costCenterRepository.findByCode(request.costCenterCode().trim())
                 .orElseThrow(() -> new IllegalArgumentException("Unknown cost center code: " + request.costCenterCode())));
         asset.setProject(optionalCode(request.projectCode()) == null ? null

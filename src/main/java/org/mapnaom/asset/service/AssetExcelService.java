@@ -14,7 +14,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.mapnaom.asset.dto.AssetRequest;
 import org.mapnaom.asset.dto.AssetResponse;
 import org.mapnaom.asset.dto.ImportResult;
+import org.mapnaom.asset.entity.enums.AssetGroup;
 import org.mapnaom.asset.entity.enums.AssetStatus;
+import org.mapnaom.asset.entity.enums.DepreciationMethod;
 import org.mapnaom.asset.entity.enums.DepreciationStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,8 +130,8 @@ public class AssetExcelService {
                 text(row, 0, formatter),
                 text(row, 1, formatter),
                 parseDate(text(row, 2, formatter), "commissioningDate"),
-                text(row, 3, formatter),
-                text(row, 4, formatter),
+                parseAssetGroup(text(row, 3, formatter), "assetGroup"),
+                parseDepreciationMethod(text(row, 4, formatter), "depreciationMethod"),
                 text(row, 5, formatter),
                 nullIfBlank(text(row, 6, formatter)),
                 text(row, 7, formatter),
@@ -154,8 +156,8 @@ public class AssetExcelService {
         set(row, 0, asset.plateNumber());
         set(row, 1, asset.title());
         set(row, 2, asset.commissioningDate().toString());
-        set(row, 3, asset.assetGroup());
-        set(row, 4, asset.depreciationMethod());
+        set(row, 3, asset.assetGroup().name());
+        set(row, 4, asset.depreciationMethod().name());
         set(row, 5, asset.costCenter().code());
         set(row, 6, asset.project() == null ? "" : asset.project().code());
         set(row, 7, asset.location().code());
@@ -208,6 +210,22 @@ public class AssetExcelService {
     private <E extends Enum<E>> E parseEnum(Class<E> type, String value, String field) {
         try {
             return Enum.valueOf(type, value.trim().toUpperCase());
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(field + " has an unsupported value: " + value);
+        }
+    }
+
+    private AssetGroup parseAssetGroup(String value, String field) {
+        try {
+            return AssetGroup.fromText(value);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException(field + " has an unsupported value: " + value);
+        }
+    }
+
+    private DepreciationMethod parseDepreciationMethod(String value, String field) {
+        try {
+            return DepreciationMethod.fromText(value);
         } catch (IllegalArgumentException exception) {
             throw new IllegalArgumentException(field + " has an unsupported value: " + value);
         }

@@ -8,8 +8,11 @@ import org.mapnaom.asset.dto.ReferenceDtos.NamedRequest;
 import org.mapnaom.asset.dto.ReferenceDtos.NamedResponse;
 import org.mapnaom.asset.dto.ReferenceDtos.PersonRequest;
 import org.mapnaom.asset.dto.ReferenceDtos.PersonResponse;
+import org.mapnaom.asset.dto.ImportResult;
 import org.mapnaom.asset.service.ReferenceDataService;
+import org.mapnaom.asset.service.ReferenceExcelService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +33,7 @@ import java.util.List;
 public class ReferenceDataController {
 
     private final ReferenceDataService service;
+    private final ReferenceExcelService excelService;
 
     @GetMapping("/cost-centers")
     public List<NamedResponse> costCenters() { return service.findAllCostCenters(); }
@@ -48,6 +54,11 @@ public class ReferenceDataController {
     @DeleteMapping("/cost-centers/{id}")
     public ResponseEntity<Void> deleteCostCenter(@PathVariable Long id) {
         service.deleteCostCenter(id); return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/cost-centers/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult importCostCenters(@RequestPart("file") MultipartFile file) {
+        return excelService.importCostCenters(file);
     }
 
     @GetMapping("/projects")
@@ -71,6 +82,11 @@ public class ReferenceDataController {
         service.deleteProject(id); return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/projects/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult importProjects(@RequestPart("file") MultipartFile file) {
+        return excelService.importProjects(file);
+    }
+
     @GetMapping("/locations")
     public List<LocationResponse> locations() { return service.findAllLocations(); }
 
@@ -90,6 +106,16 @@ public class ReferenceDataController {
     @DeleteMapping("/locations/{id}")
     public ResponseEntity<Void> deleteLocation(@PathVariable Long id) {
         service.deleteLocation(id); return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/locations/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult importLocations(@RequestPart("file") MultipartFile file) {
+        return excelService.importLocations(file);
+    }
+
+    @PostMapping(value = "/people/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImportResult importPeople(@RequestPart("file") MultipartFile file) {
+        return excelService.importPeople(file);
     }
 
     @GetMapping("/people")
